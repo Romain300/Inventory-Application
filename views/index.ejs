@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+</head>
+<body>
+    <% games.forEach((game) => { %>
+
+        <div>
+            <div> <%= game.name %> </div>
+            <div> <%= game.genre %> </div>
+            <div> <%= game.developer_names %> </div>
+        </div>
+
+        <a href="/<%= game.id %>"><button>Modify</button></a>
+        <form method="POST" action="/delete-game/<%= game.id %>">
+            <button type="submit">Delete</button>
+        </form>
+    <% }) %>
+
+    <form method="POST" action="/add">
+        <div>
+            <label for="name">Name:</label>
+            <input name="name" id="name" type="text">
+        </div>
+        <div>
+            <label for="genre">Genre:</label>
+            <input name="genre" id="genre" type="text">
+        </div>
+        <div>
+            <label for="developers">Developers:</label>
+            <input name="developers" id="developers" type="text">
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+
+</body>
+</html>
