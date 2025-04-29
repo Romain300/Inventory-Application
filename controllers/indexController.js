@@ -9,7 +9,7 @@ async function getAllGames(req, res) {
 async function getGame(req, res) {
     const game = await db.getGame(req.params.idGame);
     console.log("game: ", game);
-    res.render("formGame", {game: game});
+    res.render("updateGame", {game: game});
 };
 
 async function addGame(req, res) {
@@ -28,6 +28,7 @@ async function deleteGame(req, res) {
     console.log(`${game.name} has been deleted`)
     res.redirect("/");
 };
+
 
 
 module.exports = {
