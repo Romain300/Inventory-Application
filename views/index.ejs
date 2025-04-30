@@ -14,13 +14,14 @@
             <div> <%= game.developer_names %> </div>
         </div>
 
-        <a href="/<%= game.id %>"><button>Modify</button></a>
+        <a href="/updateGame/<%= game.id %>"><button>Modify</button></a>
         <form method="POST" action="/delete-game/<%= game.id %>">
             <button type="submit">Delete</button>
         </form>
     <% }) %>
-
-    <form method="POST" action="/add">
+    
+    <%- include("partials/errors.ejs") %>
+    <form method="POST" action="/">
         <div>
             <label for="name">Name:</label>
             <input name="name" id="name" type="text">

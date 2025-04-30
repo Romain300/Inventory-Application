@@ -6,7 +6,8 @@
     <title><%= game.name %></title>
 </head>
 <body>
-    <form method="POST" action="/updateGame">
+    <%- include("partials/errors.ejs") %>
+    <form method="POST" action="/updateGame/<%= game.id %>">
         <div>
             <label for="id">Id:</label>
             <input name="id" id="id" type="text" value="<%= game.id %>" readonly>
