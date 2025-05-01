@@ -2,7 +2,7 @@ const pool = require("./pool");
 
 async function getAllGames() {
     const { rows } = await pool.query(`
-        SELECT games.id, games.name, games.genre, ARRAY_AGG(developers.name) AS developer_names
+        SELECT games.id, games.name, games.genre, games.photo, ARRAY_AGG(developers.name) AS developer_names
         FROM games 
         JOIN game_developers ON games.id = game_developers.game_id 
         JOIN developers ON developers.id = game_developers.developer_id

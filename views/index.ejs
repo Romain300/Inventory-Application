@@ -3,39 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
     <title><%= title %></title>
 </head>
 <body>
-    <% games.forEach((game) => { %>
-
-        <div>
-            <div> <%= game.name %> </div>
-            <div> <%= game.genre %> </div>
-            <div> <%= game.developer_names %> </div>
+    <header>
+        <div class="logo-title"><a href="https://github.com/Romain300/">
+            <img class="logo" src="/github-brands-solid.svg" alt="link author github"></a>
+            <h2>Game management App</h2>
         </div>
+        <nav>
+            <ul>
+                <li><a>Games</a></li>
+                <li><a>Add Games</a></li>
+            </ul>
+        </nav>
+    </header>
 
-        <a href="/updateGame/<%= game.id %>"><button>Modify</button></a>
-        <form method="POST" action="/delete-game/<%= game.id %>">
-            <button type="submit">Delete</button>
+    <main>
+
+        <section>
+            <% games.forEach((game) => { %>
+                <div class="game">
+                    <img src="<%= game.photo %>" alt="image game">
+                    <div class="game-informations">
+                        <div> <%= game.name %> </div>
+                        <div> <%= game.genre %> </div>
+                        <div> <%= game.developer_names %> </div>
+                    </div>
+            
+                    <div class="option-game">
+                        <a href="/updateGame/<%= game.id %>"><button class="modify" type="button">Modify</button></a>
+                        <form method="POST" action="/delete-game/<%= game.id %>">
+                            <button class="delete" type="submit">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            <% }) %>
+        </section>
+
+        <%- include("partials/errors.ejs") %>
+        <form method="POST" action="/">
+            <div>
+                <label for="name">Name:</label>
+                <input name="name" id="name" type="text">
+            </div>
+            <div>
+                <label for="genre">Genre:</label>
+                <input name="genre" id="genre" type="text">
+            </div>
+            <div>
+                <label for="developers">Developers:</label>
+                <input name="developers" id="developers" type="text">
+            </div>
+            <button  type="submit">Submit</button>
         </form>
-    <% }) %>
+
+    </main>
     
-    <%- include("partials/errors.ejs") %>
-    <form method="POST" action="/">
-        <div>
-            <label for="name">Name:</label>
-            <input name="name" id="name" type="text">
-        </div>
-        <div>
-            <label for="genre">Genre:</label>
-            <input name="genre" id="genre" type="text">
-        </div>
-        <div>
-            <label for="developers">Developers:</label>
-            <input name="developers" id="developers" type="text">
-        </div>
-        <button type="submit">Submit</button>
-    </form>
+    
+   
 
 </body>
 </html>
