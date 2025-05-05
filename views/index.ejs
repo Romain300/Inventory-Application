@@ -7,29 +7,16 @@
     <title><%= title %></title>
 </head>
 <body>
-    <header>
-        <div class="logo-title"><a href="https://github.com/Romain300/">
-            <img class="logo" src="/github-brands-solid.svg" alt="link author github"></a>
-            <h2>Game management App</h2>
-        </div>
-        <nav>
-            <ul>
-                <li><a>Games</a></li>
-                <li><a>Add Games</a></li>
-            </ul>
-        </nav>
-    </header>
-
+    <%- include("partials/header.ejs") %>
     <main>
-
         <section>
             <% games.forEach((game) => { %>
                 <div class="game">
                     <img src="<%= game.photo %>" alt="image game">
                     <div class="game-informations">
-                        <div> <%= game.name %> </div>
-                        <div> <%= game.genre %> </div>
-                        <div> <%= game.developer_names %> </div>
+                        <div> Name: <%= game.name %> </div>
+                        <div> Genre: <%= game.genres %> </div>
+                        <div> Developers: <%= game.developer_names %> </div>
                     </div>
             
                     <div class="option-game">
@@ -41,28 +28,6 @@
                 </div>
             <% }) %>
         </section>
-
-        <%- include("partials/errors.ejs") %>
-        <form method="POST" action="/">
-            <div>
-                <label for="name">Name:</label>
-                <input name="name" id="name" type="text">
-            </div>
-            <div>
-                <label for="genre">Genre:</label>
-                <input name="genre" id="genre" type="text">
-            </div>
-            <div>
-                <label for="developers">Developers:</label>
-                <input name="developers" id="developers" type="text">
-            </div>
-            <button  type="submit">Submit</button>
-        </form>
-
     </main>
-    
-    
-   
-
 </body>
 </html>

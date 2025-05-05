@@ -3,6 +3,7 @@ const express = require("express");
 const path = require("node:path");
 const indexRouter = require("./routes/indexRouter");
 const updateGameRouter = require("./routes/updateGameRouter");
+const newGameRouter = require("./routes/addGameRouter");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -17,6 +18,7 @@ app.use(express.static(assetsPath));
 app.get("/favicon.ico", (req, res) => res.status(204)); 
 app.use("/", indexRouter);
 app.use("/updateGame", updateGameRouter);
+app.use("/addGame", newGameRouter);
 
 
 app.listen(PORT, () => {
@@ -24,4 +26,5 @@ app.listen(PORT, () => {
 });
 
 
-//keep styling, add a separate page for add form and handle photo
+//sanitize two more fields for the update form, connect add form to database 
+// and add genres managements

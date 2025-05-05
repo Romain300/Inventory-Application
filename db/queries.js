@@ -1,29 +1,33 @@
 const pool = require("./pool");
 
-async function getAllGames() {
+async function getAllGames() { //done
     const { rows } = await pool.query(`
-        SELECT games.id, games.name, games.genre, games.photo, ARRAY_AGG(developers.name) AS developer_names
+        SELECT games.id, games.name, ARRAY_AGG(DISTINCT genres.name)  AS genres, games.photo, ARRAY_AGG(DISTINCT developers.name) AS developer_names
         FROM games 
+        JOIN game_genres ON game_genres.game_id = games.id
+        JOIN genres ON genres.id = game_genres.genre_id
         JOIN game_developers ON games.id = game_developers.game_id 
         JOIN developers ON developers.id = game_developers.developer_id
-        GROUP BY games.id, games.name, games.genre
+        GROUP BY games.id, games.name, games.photo
         `);
     return rows;
 };
 
 async function getGame(id_game) {
     const { rows } = await pool.query(`
-        SELECT games.name, games.genre, games.id, ARRAY_AGG(developers.name) AS developer_names
+        SELECT games.name, games.id, games.photo, ARRAY_AGG(DISTINCT genres.name) AS genres, ARRAY_AGG(DISTINCT developers.name) AS developer_names
         FROM games
+        JOIN game_genres ON game_genres.game_id = games.id
+        JOIN genres ON genres.id = game_genres.genre_id
         JOIN game_developers ON games.id = game_developers.game_id 
         JOIN developers ON developers.id = game_developers.developer_id
         WHERE games.id = $1
-        GROUP BY games.name, games.genre, games.id
+        GROUP BY games.name, games.id, games.photo
     `, [id_game]);
     return rows[0];
 };
 
-async function addGame(name, genre, developers) {
+async function addGame(name, genre, developers, photo) {
     //Checking game name and inserting it 
     let foundGame = (await pool.query(`
         SELECT id FROM games WHERE LOWER(TRIM(name)) = LOWER(TRIM($1))
@@ -34,8 +38,8 @@ async function addGame(name, genre, developers) {
     }
 
     await pool.query(`
-        INSERT INTO games (name, genre) VALUES (TRIM($1), TRIM($2))
-    `, [name, genre]);
+        INSERT INTO games (name, genre, photo) VALUES (TRIM($1), TRIM($2), TRIM($3))
+    `, [name, genre, photo]);
 
     foundGame = (await pool.query(`
         SELECT id FROM games WHERE LOWER(TRIM(name)) = LOWER(TRIM($1))
@@ -83,19 +87,21 @@ async function deleteGame(id) {
     `, [id]);
 };
 
-async function updateGame(name, genre, developers, id) {
+async function updateGame(name, genres, developers, id, photo) {
     const arrayDevelopers = developers.split(",").map((developer) => developer.trim());
 
     const game = (await pool.query(`
-        SELECT games.id, games.name, games.genre, ARRAY_AGG(developers.name) AS developer_names
+        SELECT games.id, games.name, ARRAY_AGG(DISTINCT genres.name)  AS genres, games.photo, ARRAY_AGG(DISTINCT developers.name) AS developer_names
         FROM games 
-        JOIN game_developers ON games.id = game_developers.game_id
+        JOIN game_genres ON game_genres.game_id = games.id
+        JOIN genres ON genres.id = game_genres.genre_id
+        JOIN game_developers ON games.id = game_developers.game_id 
         JOIN developers ON developers.id = game_developers.developer_id
         WHERE games.id = $1
-        GROUP BY games.id, games.name, games.genre
+        GROUP BY games.id, games.name, games.photo
     `, [id])).rows[0];
     
-    //Set up name and genre
+    //Set up name and photo
     if (name.trim() !== game.name.trim()) {
         await pool.query(`
             UPDATE games 
@@ -104,13 +110,38 @@ async function updateGame(name, genre, developers, id) {
         `, [name, id]);
     }
 
-    if (genre.trim() !== game.genre.trim()) {
+    if (photo.trim() !== game.photo.trim()) {
         await pool.query(`
             UPDATE games
-            SET genre = $1
+            SET photo = $1
             WHERE id = $2
-        `, [genre, id]);
+        `, [photo, id]);
     }
+
+    //Set up genres
+    const dbGenres = game.genres.map((genre) => genre.trim());
+    const inputGenres = genres.map((genre) => genre.trim());
+    const genresDiff = dbGenres.length !== inputGenres || !inputGenres.every((genre) => dbGenres.includes(genre));
+
+    if (genresDiff === true) {
+        await pool.query(`DELETE FROM game_genres WHERE game_id = $1`, [id]);
+
+        const genreIds =[];
+
+        for (let genre of genres) {
+            
+            let foundGenre = (await pool.query(`
+                SELECT id FROM genres WHERE name = $1
+            `, [genre])).rows[0];
+
+            genreIds.push(foundGenre.id);
+        }
+
+        for (let genreId of genreIds) {
+            await pool.query(`INSERT INTO game_genres (game_id, genre_id) VALUES ($1, $2)`, [game.id, genreId]);
+        };
+    }
+
 
     //Set up dev
     const dbDevelopers = game.developer_names.map((dev) => dev.trim().toLowerCase());
@@ -153,13 +184,19 @@ async function updateGame(name, genre, developers, id) {
     };
 };
 
+async function getAllGenres() {
+    const { rows } = await pool.query('SELECT name FROM genres');
+    return rows;
+};
+
 module.exports = {
     getAllGames,
     getGame, 
     addGame,
     deleteGame,
-    updateGame
+    updateGame,
+    getAllGenres
 };
 
 
-//add sanityzing into form 
+//Update queries fllowing the new database structure

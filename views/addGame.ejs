@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <title>Add Game</title>
+</head>
+<body>
+    <%- include("partials/header.ejs") %>
+
+    <main class="main-add-update-game">
+        <%- include("partials/errors.ejs") %>
+        <form class="form-add-update-game" method="POST" action="/addGame">
+            <div class="input-div">
+                <label for="name">Name:</label>
+                <input name="name" id="name" type="text">
+            </div>
+            <div class="input-div">
+                <label for="genre">Genre:</label>
+                <select name="genre" id="genre" multiple>
+                    <% genres.forEach((genre) => { %>
+                        <option value="<%= genre.name %>"><%= genre.name %></option>
+                    <% }) %>
+                </select>
+            </div>
+            <div class="input-div">
+                <label for="developers">Developers:</label>
+                <input name="developers" id="developers" type="text">
+            </div>
+            <div>
+                <div class="input-div">
+                    <label for="photo">URL Picture:</label>
+                    <input name="photo" id="photo" type="text">
+                </div>
+                <p class="cover">Insert a game's cover <a href="https://www.thecoverproject.net/">https://www.thecoverproject.net/</a></p>
+
+            </div>
+            
+            <div>
+                <button class="submit" type="submit">Submit</button>
+            </div>
+        </form>
+    </main>
+</body>
+</html>
