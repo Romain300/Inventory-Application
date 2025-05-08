@@ -17,8 +17,8 @@
                 <input name="name" id="name" type="text">
             </div>
             <div class="input-div">
-                <label for="genre">Genre:</label>
-                <select name="genre" id="genre" multiple>
+                <label for="genres">Genre:</label>
+                <select name="genres" id="genres" multiple>
                     <% genres.forEach((genre) => { %>
                         <option value="<%= genre.name %>"><%= genre.name %></option>
                     <% }) %>

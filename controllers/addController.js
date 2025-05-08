@@ -6,14 +6,11 @@ const validateUser = [
         .trim()
         .notEmpty()
         .withMessage("Name can not be empty")
-        .isLength({max: 50})
+        .isLength({ max: 50 })
         .withMessage("Name can to be longer than 50 characteres"),
-    body("genre")
-        .trim()
-        .notEmpty()
-        .withMessage("Genre can not be empty")
-        .isLength({max: 50})
-        .withMessage("genre can to be longer than 50 characteres"),
+    body("genres")
+        .isArray({ min:1 })
+        .withMessage("Genres must be a non-empty array"),
     body("developers")
         .trim()
         .notEmpty()
@@ -30,11 +27,12 @@ const addGame = [
     async (req, res) => {
         const errors = validationResult(req);
         if(!errors.isEmpty()) {
-            const games = await db.getAllGames();
-            return res.status(400).render("addGame", { errors: errors.array() });
+            const genres = await db.getAllGenres();
+            return res.status(400).render("addGame", { errors: errors.array(), genres: genres });
         }
-        const { genre, name, developers, photo } = req.body;
-        await db.addGame(name, genre, developers, photo);
+        let { genres, name, developers, photo } = req.body;
+        if (!Array.isArray(genres)) genres = [genres];
+        await db.addGame(name, genres, developers, photo);
         res.redirect("/");
     }
 ];
@@ -49,3 +47,4 @@ module.exports = {
     addGame,
     getAddForm
 };
+

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
+    <title>Update Genres</title>
+</head>
+<body>
+    <%- include("partials/header.ejs") %>
+    <main class="main-genres">
+        <div>
+            <%- include("partials/errors.ejs") %>
+            <section class="cards-genres">
+                <% genres.forEach((genre) => { %>
+                    <div class="genres" style="background-color: <%= genre.bg %>; color: <%= genre.textColor %>;">
+                        <div> <%= genre.name %> </div>
+                        <form method="POST" action="/updateGenres/delete-genre/<%= genre.id %>">
+                            <button>
+                                <img class="delete-img" src="/cross-svgrepo-com.svg" alt="delete">
+                            </button>
+                        </form>
+                    </div>
+                <% }) %>
+            </section>
+            <form class="form-add-update-game" method="POST" action="/updateGenres">
+                <div class="input-div">
+                    <label for="genre">New Genre:</label>
+                    <input name="genre" id="genre" type="text">
+                </div>
+                <div>
+                    <button class="submit" type="submit">Submit</button>
+                </div>
+            </form>
+        </div>  
+    </main>
+    
+</body>
+</html>
