@@ -9,8 +9,11 @@ const validateUser = [
         .isLength({ max: 50 })
         .withMessage("Name can to be longer than 50 characteres"),
     body("genres")
-        .isArray({ min:1 })
-        .withMessage("Genres must be a non-empty array"),
+        .trim()
+        .notEmpty()
+        .withMessage("Genre can not me empty")
+        .isLength({max: 50})
+        .withMessage("Name can't be more than 50 characteres"),
     body("developers")
         .trim()
         .notEmpty()
@@ -19,6 +22,16 @@ const validateUser = [
         .trim()
         .notEmpty()
         .withMessage("URL Picture can not be empty"),
+    body("password")
+        .trim()
+        .notEmpty()
+        .withMessage("Password can not me empty")
+        .custom((value) => {
+            if (value !== process.env.PASSWORD) {
+                throw new Error("Password is not correct")
+            }
+            return true;
+        }),
 ];
 
 const addGame = [

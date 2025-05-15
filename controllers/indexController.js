@@ -6,15 +6,6 @@ async function getAllGames(req, res) {
     res.render("index", { title: "Inventory Application" , games: games });
 };
 
-async function deleteGame(req, res) {
-    const idGame = req.params.idGame;
-    const game = await db.getGame(idGame);
-    await db.deleteGame(idGame);
-    console.log(`${game.name} has been deleted`)
-    res.redirect("/");
-};
-
 module.exports = {
     getAllGames,
-    deleteGame
 };

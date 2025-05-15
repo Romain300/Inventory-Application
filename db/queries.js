@@ -141,6 +141,23 @@ async function updateGame(name, genres, developers, id, photo) {
     }
 
     //Set up genres
+    const genreIds =[];
+    const setUpGenre = async () => {
+
+        for (let genre of genres) {
+                
+            let foundGenre = (await pool.query(`
+                SELECT id FROM genres WHERE name = $1
+            `, [genre])).rows[0];
+
+            genreIds.push(foundGenre.id);
+        }
+
+        for (let genreId of genreIds) {
+            await pool.query(`INSERT INTO game_genres (game_id, genre_id) VALUES ($1, $2)`, [game.id, genreId]);
+        };
+    };
+
     if (game.genres[0] !== null) {
         const dbGenres = game.genres.map((genre) => genre.trim());
         const inputGenres = genres.map((genre) => genre.trim());
@@ -149,26 +166,12 @@ async function updateGame(name, genres, developers, id, photo) {
         if (genresDiff === true) {
             await pool.query(`DELETE FROM game_genres WHERE game_id = $1`, [id]);
 
-            const genreIds =[];
-
-            for (let genre of genres) {
-                
-                let foundGenre = (await pool.query(`
-                    SELECT id FROM genres WHERE name = $1
-                `, [genre])).rows[0];
-
-                genreIds.push(foundGenre.id);
-            }
-
-            for (let genreId of genreIds) {
-                await pool.query(`INSERT INTO game_genres (game_id, genre_id) VALUES ($1, $2)`, [game.id, genreId]);
-            };
+            setUpGenre();
         }
         
+    } else {
+        setUpGenre();
     }
-
-    //rework on this part
-    
 
 
     //Set up dev
@@ -230,6 +233,20 @@ async function deleteGenre(genreId) {
     await pool.query(`DELETE FROM genres WHERE id = $1`, [genreId]);
 };
 
+async function getGamesByGenre(genre) {
+    const { rows } = await pool.query(`
+        SELECT games.id, games.name, ARRAY_AGG(DISTINCT genres.name)  AS genres, games.photo, ARRAY_AGG(DISTINCT developers.name) AS developer_names
+        FROM games 
+        LEFT JOIN game_genres ON game_genres.game_id = games.id
+        LEFT JOIN genres ON genres.id = game_genres.genre_id
+        LEFT JOIN game_developers ON games.id = game_developers.game_id 
+        LEFT JOIN developers ON developers.id = game_developers.developer_id
+        GROUP BY games.id, games.name, games.photo
+        HAVING $1 = ANY(ARRAY_AGG(DISTINCT genres.name))
+        `, [genre]);
+    return rows;
+};
+
 module.exports = {
     getAllGames,
     getGame, 
@@ -239,7 +256,8 @@ module.exports = {
     getAllGenres,
     getGenre,
     addGenre,
-    deleteGenre
+    deleteGenre,
+    getGamesByGenre
 };
 
 

@@ -30,7 +30,17 @@ const validateUser = [
         .notEmpty()
         .withMessage("New genre can not be empty")
         .isLength({ max: 50 })
-        .withMessage("New genre can not be longer than 50 characteres")
+        .withMessage("New genre can not be longer than 50 characteres"),
+    body("password")
+        .trim()
+        .notEmpty()
+        .withMessage("Password can not me empty")
+        .custom((value) => {
+            if (value !== process.env.PASSWORD) {
+                throw new Error("Password is not correct")
+            }
+            return true;
+        }),
 ]
 
 const addNewGenre = [
@@ -67,8 +77,15 @@ async function deleteGenre(req, res) {
     return res.redirect("/");
 };
 
+async function getGamesByGenre(req, res) {
+    const genreName = req.params.genreName;
+    const games = await db.getGamesByGenre(genreName);
+    return res.render("index", {title: genreName, games: games});
+};
+
 module.exports = {
     getAllGenres,
     addNewGenre,
-    deleteGenre
+    deleteGenre,
+    getGamesByGenre
 }

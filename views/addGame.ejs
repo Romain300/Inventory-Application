@@ -18,7 +18,7 @@
             </div>
             <div class="input-div">
                 <label for="genres">Genre:</label>
-                <select name="genres" id="genres" multiple>
+                <select name="genres[]" id="genres" multiple>
                     <% genres.forEach((genre) => { %>
                         <option value="<%= genre.name %>"><%= genre.name %></option>
                     <% }) %>
@@ -34,11 +34,13 @@
                     <input name="photo" id="photo" type="text">
                 </div>
                 <p class="cover">Insert a game's cover <a href="https://www.thecoverproject.net/">https://www.thecoverproject.net/</a></p>
-
             </div>
-            
+            <div class="input-div">
+                <label for="password">Password:</label>
+                <input name="password" id="password" type="password">
+            </div>
             <div>
-                <button class="submit" type="submit">Submit</button>
+                <button class="submit button-style1" type="submit">Submit</button>
             </div>
         </form>
     </main>

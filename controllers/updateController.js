@@ -1,5 +1,6 @@
 const db = require("../db/queries");
 const { body, validationResult } = require("express-validator");
+require('dotenv').config();
 
 const validateUser = [
     body("name")
@@ -18,6 +19,16 @@ const validateUser = [
         .trim()
         .notEmpty()
         .withMessage("Developers can not me empty"),
+    body("password")
+        .trim()
+        .notEmpty()
+        .withMessage("Password can not me empty")
+        .custom((value) => {
+            if (value !== process.env.PASSWORD) {
+                throw new Error("Password is not correct")
+            }
+            return true;
+        }),
 ];
 
 
@@ -28,10 +39,10 @@ const updateGame = [
         const errors = validationResult(req);
         const { id, name, developers, photo, genres} = req.body;
         if (!errors.isEmpty()) {
-            const genresDb = await db.getAllGenres();
-            return res.status(400).render(`updateGame`, {
-                game: {name, genres, developers, id, photo},
-                genres: genresDb,
+            const games = await db.getAllGames();
+            return res.status(400).render(`index`, {
+                title: "Inventory Application",
+                games: games,
                 errors: errors.array()
             });
         }

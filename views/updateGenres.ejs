@@ -14,22 +14,26 @@
             <section class="cards-genres">
                 <% genres.forEach((genre) => { %>
                     <div class="genres" style="background-color: <%= genre.bg %>; color: <%= genre.textColor %>;">
-                        <div> <%= genre.name %> </div>
-                        <form method="POST" action="/updateGenres/delete-genre/<%= genre.id %>">
-                            <button>
+                        <a class="genre-link" href="/genres/<%= genre.name %>"><%= genre.name %></a>
+                        <form method="POST" action="/genres/delete-genre/<%= genre.id %>">
+                            <button class="button-style1" type="submit">
                                 <img class="delete-img" src="/cross-svgrepo-com.svg" alt="delete">
                             </button>
                         </form>
                     </div>
                 <% }) %>
             </section>
-            <form class="form-add-update-game" method="POST" action="/updateGenres">
+            <form class="form-add-update-game" method="POST" action="/genres">
                 <div class="input-div">
                     <label for="genre">New Genre:</label>
                     <input name="genre" id="genre" type="text">
                 </div>
+                <div class="input-div">
+                    <label for="password">Password:</label>
+                    <input name="password" id="password" type="password">
+                </div>
                 <div>
-                    <button class="submit" type="submit">Submit</button>
+                    <button class="submit button-style1" type="submit">Submit</button>
                 </div>
             </form>
         </div>  
